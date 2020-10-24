@@ -1,0 +1,90 @@
+<html>
+    <head>
+        <title>Introduction</title>
+        <link rel = "stylesheet" href = "res/all.css">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+        <link rel = "icon" href = "res/icon.png">
+        <link href="res/prism.css" rel="stylesheet">
+    </head>
+    <body>
+        <a name = "top"></a>
+        <script src = "res/prism.js"></script>
+        <header>
+            <div class = "container">
+
+                <a class = "logo" href = "index.html">OpenGLForNoobs</a>
+
+                <nav>
+                    <ul>
+                        <b><li><a href = "#">Introduction</a></li></b>
+                        <li><a href = "#">Environment Setup</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <hr>
+        <p>
+            <b>What is OpenGL?</b><br><br>
+            OpenGL is a rendering API which allows us to communicate with graphics units in order to produce high performance computer graphics. It is not a library,
+            and it is not as simple as <b>#include</b> ing a single header. We will need multiple libraries in order to do what we want with OpenGL. Here they are:
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+#include "stb_image.h"
+#include "glad.h"
+#include "GLFW/glfw3.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glad.c"
+
+#include &ltstring>
+#include &ltfstream>
+#include &ltvector>
+#include &ltsstream>
+#include &ltiostream>
+#include &ltctime>
+#include &ltstdlib.h>
+#include &ltunordered_map>
+#include &ltstdio.h>
+#include &ltWindows.h>
+#include &ltshellapi.h>
+#include &ltmath.h>
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            There are a bunch of headers. First let's start with the most crucial: glad and glfw.<br><br>
+            <b>glad</b><br><br>
+            glad is a header that gets function pointers for OpenGL functions. Since there are many OpenGL versions that have many
+            different functions, we have to retrieve them somehow. This is done through glad. glad loads all the functions
+            that we will use in order to draw what we want. However, all glad does is load the functions we need to actually
+            <strong>DRAW</strong> the shapes and colour them. To create our window context and have input methods, we use glfw.<br><br>
+            <strong>Graphics Library Framework (glfw)</strong><br><br>
+            glfw allows us to create our window that we will render to and process input like mouse input and keyboard input. This includes things such as
+            mouse position, keyboard presses, and mouse clicks. It is essential to us being able to create the window and process input.<br><br>
+            Strictly speaking, the next headers are not necessary, but they make our lives much, much easier.<br><br>
+            <b>GL Mathematics (glm)</b><br><br>
+            glm is a header that includes many math tools we can use to help create what we want. It includes matrices, vectors, and
+            functions that allow us to manipulate matrices and vectors. Theoretically, you <i>could</i> create this header yourself
+            with relative ease, but it's there, so we can just use it.<br><br>
+            <b>Open Asset Import Library (assimp)</b><br><br>
+            assimp is a library that makes model loading a lot easier. It processes textures and vertices that will be used
+            when we want to draw models. Although it is technically a model loader, we still have to do a lot of the work ourselves because we have to convert it
+            into a format we can use to draw. assimp is a great help to loading assets.<br><br>
+            <b>stb_image</b><br><br>
+            stb_image is a single header that is used to load images. We use it alongside assimp to load raw image data in the form of bytes
+            to create the textures that are mapped onto the models loaded with assimp.<br><br>
+            That's all for the non-standard headers!
+
+        </p>
+        <hr>
+        <footer>
+            Hello! Looks like you've reached the end. <a href = "#top">Click here</a> to go back to the top.
+        </footer>
+    </body>
+</html>
