@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Introduction</title>
+        <title>Environment Setup</title>
         <link rel = "stylesheet" href = "res/all.css">
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
         <link rel = "icon" href = "res/icon.png">
@@ -18,6 +18,7 @@
                     <ul>
                         <li><a href = "introduction.html">Introduction</a></li>
                         <strong><li><a href = "#">Environment Setup</a></li></strong>
+                        <li><a href = "init.html">Init</a></li>
                     </ul>
                 </nav>
             </div>
@@ -34,7 +35,17 @@
 
             First we have to create our project. To do that, open VS19 and click on "Create a new project". The project
             template we want is "empty project" for C++ on Windows. Name it whatever you want and put it in a safe space.
-            Keep the solution name the same as the project name.
+            Keep the solution name the same as the project name. Next you have to get the headers from the github <a href = "#"><strong>HERE</strong></a>,
+            where I packaged them all into a nice zip. Just extract the headers and folders into the project
+            directory (where your main.cpp file goes).<br><br>
+
+            Linking the project to all the libraries and headers we need is done through the project settings:<br>
+            <img src = "assets/project_properties.png" class = "centered"><br>
+            <img src = "assets/additional_include_directories.png" class = "centered"><br>
+            <img src = "assets/additional_library_directories.png" class = "centered"><br>
+            <img src = "assets/additional_dependencies.png" class = "centered"><br>
+            After all that, we can finally include the headers we want and call the function pointers in the libs. We can
+            begin writing some code.
         <hr>
         <footer>
             Hello! Looks like you've reached the end. <a href = "#top">Click here</a> to go back to the top.
