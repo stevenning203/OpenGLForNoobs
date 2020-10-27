@@ -156,15 +156,15 @@ glfwTerminate(); // kill all windows and terminate
             and the bottom right of the screen is (x = w, y = h). However, OpenGL uses a plane called the Normalized Device Coordinate plane, where the bottom
             left of the screen is always (x = -1, y = -1), and the top right of the screen is always (x = 1, y = 1). You might wonder how this could be possible,
             since windows can vary in sizes, but that will be covered later. Right now, we can create an array of floats that represent the vertices of some
-            triangle that we want to draw.
+            triangle that we want to draw. We include a z coordinate that doesn't do anything because it makes it easier to transition into 3D later.
             <div id = "code">
                 <pre>
                     <code class = "language-cpp">
 float vertices = 
 {
-    -1.f, -1.f, // the first vertex of the triangle at (-1, -1)
-    1.f, -1.f, // the second vertex of the triangle at (1, -1)
-    0.f, 1.f // the third vertex of the triangle at (0, 1)
+    -1.f, -1.f, 0.f, // the first vertex of the triangle at (-1, -1)
+    1.f, -1.f, 0.f, // the second vertex of the triangle at (1, -1)
+    0.f, 1.f, 0.f // the third vertex of the triangle at (0, 1)
 };
                     </code>
                 </pre>
@@ -200,6 +200,48 @@ glBufferData(GL_ARRAY_BUFFER, 2 * 3 * sizeof(float), &vertices[0], GL_STATIC_DRA
             is modified once but used a lot of times, STREAM would mean that it is only used a few times and modified once, while DYNAMIC means that the buffer
             is going to be modified many times and used many times. DRAW means that we want to use the data in the buffer to draw objects, while a READ would
             mean that we want to use it later, and COPY would mean that it is used to draw but the data is not specified by the application.<br><br>
+            For our purposes, GL_STATIC_DRAW is the best one to use. This is because we write to the buffer once, and then are going to draw it once every frame.
+            If we wanted to change the buffer for some reason, we might use GL_DYNAMIC_DRAW instead. The next thing we have to do is tell OpenGL how the data in the
+            buffer is organized. This is done because the data is transferred to the shader, where we will use it to do operations and draw our vertices.<br><br>
+            <b>Shaders</b><br><br>
+            A shader is a program that runs on the GPU instead of the CPU. This is where calculations in regards to vertices and colouring are done. The language
+            that OpenGL uses to write its shaders is called GLSL and is very similar to C. There are unique tokens and functions that are specific to GLSL so
+            we have to learn those in order to effectively learn GLSL. For now, all you need to know is that there are two shaders, the vertex shader and the fragment shader.<br><br>
+            <b>Vertex Shader</b><br><br>
+            The vertex shader's job is to use the vertices put in by the buffers and then do some operations to output a variable "gl_Position". This is the normalized
+            device coordinate that is drawn to the screen. You may wonder, what exactly makes OpenGL a 3D rendering tool instead of a 2D? Interestingly, OpenGL doesn't
+            exactly have any inherent ability to draw in three dimensions. All OpenGL can do in regards to drawing is draw many triangles very quickly. Right now, we are
+            going to focus on 2D so that we can easily understand the OpenGL pipeline.<br><br>
+            <b>Fragment Shader</b><br><br>
+            In OpenGL, colouring is done through fragments, where each "fragment" is a portion of the triangle being drawn. There will be at least one fragment for each pixel.
+            The fragment shader is capable of taking texture samples to find the pixel colour that is needed at any specific fragment. This is where textures come from. We'll,
+            for now, just output one colour so that the triangle will be one solid colour. To write a shader, we have to write a shader parser in C++ that will take our shader
+            file and convert it into a char array, which will then be given to OpenGL to be used as the shader. Our shader right now is very simple, and you can probably write
+            a shader parser without help, so I will just make the shaders const char * for now:
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+const char * vertex_shader_source = "#version 330 core\n layout(location = 0) in vec3 vertex_position;\nvoid main()\n{\ngl_Position = vec4(vertex_position, 1.f);\n}";
+
+// the shader actually looks like this:
+
+#version 330 core
+
+layout(location = 0) in vec3 vertex_position;
+
+void main()
+{
+    gl_Position = vec4(vertex_position, 1.f);
+}
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            The #version line tells OpenGL which GLSL version we want. Since we are using core OpenGL 3.3, we tell it that it is version 330 core. The next line has to do
+            with the vertex buffer. It just says that for this buffer, with an ID of location = 0, we take in vertex positions that are in the form of 3 component vectors.
+            In main is where the actual code to be executed is written. We have to set gl_Position to a vector with 4 components, not 3, so we just take the original vector
+            and add a one on to the end.
         </p>
         <hr>
         <footer>
