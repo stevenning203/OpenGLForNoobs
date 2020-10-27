@@ -94,6 +94,111 @@ int main()
                 </pre>
             </div>
         </p>
+        <p>
+            All this does is create a window that opens. If you've ever done any game development at all, you know that we have to use
+            a loop in order to draw our images and take inputs every single frame. For OpenGL, we have to clear the buffers, poll events,
+            and then update the display. The functions that we use are:
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+glClear(GL_COLOR_BUFFER_BIT); // clear the internal buffers that are used by OpenGL
+glfwSwapBuffers(window); // swap the front and the back buffers
+glfwPollEvents(); // poll events, such as a window movement or a window close.
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            A buffer is just space created for data. Every frame, the internal buffers used by OpenGL are filled with data that is used when
+            the frame is being drawn, which needs to be cleared every frame or else the data might be the same between frames. Swapping
+            the front and the back buffer is just a way of saying that the display is updated. The front buffer is the buffer containing
+            the pixel data which is displayed on your screen, and the back buffer is the buffer containing the pixel data that you wrote
+            to to create the next frame.<br><br>
+
+            We also need to poll events because this tells Windows that the window is still responding, and also does things like allow
+            the resizing, movement, and closing of the window.<br><br>
+
+            All three of these function calls are placed in a while loop that checks if the program should exit:
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+while(!glfwWindowShouldClose(window))
+{
+    glClear(GL_COLOR_BUFFER_BIT); // clear the internal buffers that are used by OpenGL
+
+    //render here
+
+    glfwSwapBuffers(window); // swap the front and the back buffers
+    glfwPollEvents(); // poll events, such as a window movement or a window close.
+}
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            That's great! We have the loop and the init functions down, but how do we draw?<br><br>
+            <b>OpenGL's pipeline</b><br><br>
+            A <b>pipeline</b> is the stuff that we need to do from beginning to end in order to accomplish what we want. OpenGL deals with buffers
+            quite a bit, so understanding them is vital to your success in understanding OpenGL. Your graphics card has video memory which can be
+            segmented into buffers that can be filled with respective data. Why does a graphics chip have its own memory? It's because of speed.
+            Memory right there on the graphics card is much faster to access by the graphics processing chip. For example, a GTX 1080 has a memory
+            bandwith of 320 gigabytes per second, while a given pair of memory sticks may only have a bandwidth of around 15 gigabytes per second.
+            The extremely fast transfer of large amounts of data is imperative to computer graphics because of the requirement of speed.<br><br>
+
+            These buffers on the GPU can hold many things, like vertices, textures, and more. We'll begin first with a vertex buffer. This is
+            a buffer that holds the vertex data. That is, data containing each point of the shapes we want to draw. In OpenGL, it is very common
+            practice to use solely triangles, because they are the most elementary non-degenerate two-dimensional shape, meaning that all two-dimensional
+            shapes without curves can be represented congruently with triangles, although curves can be approximated with a large amount of vertices.<br><br>
+
+            In a rendering tool such as Pygame, from Python, the plane used to draw points is very simple, where the top left of the screen is (x = 0, y = 0),
+            and the bottom right of the screen is (x = w, y = h). However, OpenGL uses a plane called the Normalized Device Coordinate plane, where the bottom
+            left of the screen is always (x = -1, y = -1), and the top right of the screen is always (x = 1, y = 1). You might wonder how this could be possible,
+            since windows can vary in sizes, but that will be covered later. Right now, we can create an array of floats that represent the vertices of some
+            triangle that we want to draw.
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+float vertices = 
+{
+    -1.f, -1.f, // the first vertex of the triangle at (-1, -1)
+    1.f, -1.f, // the last vertex of the triangle at (1, -1)
+    0.f, 1.f // the second vertex of the triangle at (0, 1)
+};
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            This array has the vertices of our triangle. Note that the vertices are in counter-clockwise order because of something called backface culling,
+            where triangles are only draw on one side, which is the side where the vertices are in counter-clockwise order. This is for performance
+            reasons since the program only has to draw half the triangles with backface culling on. So what exactly is the pipeline of OpenGL?<br><br>
+
+            OpenGL's pipeline involves uploading the data into the buffers in the GPU, telling the GPU how to use this data, and then telling the GPU
+            to draw using the buffers. You'll probably have around one buffer per model, so that you can apply unique transformations onto each model
+            as you require. The first thing we need to do is tell the GPU that we want some memory for a buffer. Then we have to "bind" the buffer,
+            which is a way of saying that any operations done next are referring to that specific buffer. A vertex buffer in OpenGL is commonly
+            referred to as a vertex buffer object (VBO). Note that the code that follows is done outside of the loop, right after our
+            declaration of the vertices.
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+unsigned int VBO;
+glGenBuffers(1, &VBO); // create the space for the vertices we want to upload to the GPU
+glBindBuffer(GL_ARRAY_BUFFER, VBO); // bind the VBO and tell OpenGL that it is a buffer for an array
+glBufferData(GL_ARRAY_BUFFER, 2 * 3 * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            The last line, glBufferData..., uploads the data to the buffer. You may have noticed that there are 2 arguments that you don't know yet, which are
+            "2 * 3 * sizeof(float)", and "GL_STATIC_DRAW". The first of the two arguments tells OpenGL how big the data is in bytes. For us, it would be
+            two floats per vertex, three vertices, and 4 bytes per float. The latter argument tells OpenGL how we are going to use the data in the buffer.
+            This is important because the argument we choose is important to the performance when we do things with the buffer. STATIC means that the buffer
+            is modified once but used a lot of times, STREAM would mean that it is only used a few times and modified once, while DYNAMIC means that the buffer
+            is going to be modified many times and used many times. DRAW means that we want to use the data in the buffer to draw objects, while a READ would
+            mean that we want to use it later, and COPY would mean that it is used to draw but the data is not specified by the application.<br><br>
+        </p>
         <hr>
         <footer>
             Hello! Looks like you've reached the end. <a href = "#top">Click here</a> to go back to the top.
