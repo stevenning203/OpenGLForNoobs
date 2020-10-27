@@ -88,6 +88,7 @@ int main()
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
     }
+    glEnable(GL_CULL_FACE); // tell OpenGL to enable backface culling : will be covered later
     return 0;
 }
                     </code>
