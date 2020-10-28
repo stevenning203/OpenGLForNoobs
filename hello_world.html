@@ -242,6 +242,54 @@ void main()
             with the vertex buffer. It just says that for this buffer, with an ID of location = 0, we take in vertex positions that are in the form of 3 component vectors.
             In main is where the actual code to be executed is written. We have to set gl_Position to a vector with 4 components, not 3, so we just take the original vector
             and add a one on to the end.
+
+            In the fragment shader, GLSL takes colours as a 3 length vector with red, green, and blue normalized between 0 and 1. That means that no red at all means a value
+            of 0 for red, and full red would be a value of 1. We actually have to say that we want a vector going out for the fragment shader, so we do that by declaring
+            out and then a value. Here is the simple fragment shader (of course, this is the parsed version.)
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+#version 330 core
+
+out vec3 fragment_color;
+
+void main()
+{
+    fragment_color = vec3(1.f, 0.25f, 0.1f);
+}
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            The fragment shader declares first that there is a vector of length 3 that will go out, and then sets the vector to a vec3 of full red, part blue, and part green.
+            This fragment shader just sets all fragments to this colour. If we were using textured objects, we would sample a texture here, and also calculate things
+            like lighting.<br><br>
+
+            We still haven't finished with our vertex buffer yet. We have to call the function glVertexAttribPointer() in order to declare how the vertices are organized.
+            The function glVertexAttribPointer() needs 6 arguments : glVertexAttribPointer(unsigned int index, int size, type, bool normalized, int stride, void * pointer);
+            The index is the offset of where the actual data starts. For us, that would be 0, since the start of the buffer is where the data starts. Size is the amount of
+            items to be combined into a vector. In our vertex shader, the line "layout (location = 0) in vec3 vertex_position" means that it is a vec3, or there are 3 items
+            per vector. So that argument is 3. For type, the items in our array are floats, but we want to use a OpenGL enum for this argument, which is GL_FLOAT. Normalized
+            is asking if it is normalized, so we just say GL_FALSE, because it is not normalized. The stride is the amount of bytes that the program has to jump in order to reach
+            the next item in the buffer. Since each item in the array is a float, this would be the size of a float, or sizeof(float). Because our array is just vertex positions and
+            nothing else, we don't have to deal with the pointer so we can just say (void*)0 for that argument.<br><br>
+
+            Additionally, we need to associate the function we just called with an index, which is in "location = 0" for the vertex shader. The function we use is "glEnableVertexAttribArray".
+            The only argument it asks for is an integer which is the location, so we just put a 0 in there. These functions are called right after we use glBufferData().
+            Our final calls in regards to attributes for our buffer is:
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+glEnableVertexAttribArray(0); // same as layout(location = i), where i is 0 in our case
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            Now we are very close to being able to draw the triangle. All we have to do is call the draw function every loop. The function we are going to use is
+            glDrawArrays().
         </p>
         <hr>
         <footer>
