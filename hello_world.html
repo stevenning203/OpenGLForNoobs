@@ -255,7 +255,7 @@ out vec3 fragment_color;
 
 void main()
 {
-    fragment_color = vec3(1.f, 0.25f, 0.1f);
+    fragment_color = vec3(1.f, 0.25f, 0.5f);
 }
                     </code>
                 </pre>
@@ -289,7 +289,99 @@ glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
         </p>
         <p>
             Now we are very close to being able to draw the triangle. All we have to do is call the draw function every loop. The function we are going to use is
-            glDrawArrays().
+            glDrawArrays(mode, first, count). The first argument is the mode in the form of an OpenGL enum. We want to draw triangles using our buffer, so we use
+            GL_TRIANGLES. For first, we want to start from the beginning of the buffer, so we say 0. For count, we are only drawing one triangle, so we say 1.
+            This will go in the loop so it is drawn every frame before the display is cleared.
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+glDrawArrays(GL_TRIANGLES, 0, 1);
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            Your whole code should look something like this:
+            <div id = "code">
+                <pre>
+                    <code class = "language-cpp">
+#include "assimp/Importer.hpp"
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+#include "stb_image.h"
+#include "glad.h"
+#include "GLFW/glfw3.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glad.c"
+
+#include &ltstring>
+#include &ltfstream>
+#include &ltvector>
+#include &ltsstream>
+#include &ltiostream>
+#include &ltctime>
+#include &ltstdlib.h>
+#include &ltunordered_map>
+#include &ltstdio.h>
+#include &ltWindows.h>
+#include &ltshellapi.h>
+#include &ltmath.h>
+
+int main()
+{
+    glfwInit(); //init GLFW
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // tell GLFW that our OpenGL version is at least 3.x
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // tell GLFW that our OpenGL version is x.3 (3.3)
+	glfwWindowHint(GLFW_SAMPLES, 4); // tell GLFW to use MSAA 4x anti aliasing
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // tell GLFW that we are using modern OpenGL and not legacy
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "OpenGLForNoobs", NULL, NULL); // create the GLFW window
+    glfwMakeContextCurrent(window); // set the window we just made to the current one
+    if (!window) // check if our window was created successfully, if not, then print an error and quit.
+	{
+		std::cout << "Failed to init GLFW window" << std::endl;
+		glfwTerminate();
+	}
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) // check if glad loads the function pointers successfully, if not, print error
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+    }
+    glEnable(GL_CULL_FACE); // tell OpenGL to enable backface culling : will be covered later
+    float vertices = 
+    {
+        -1.f, -1.f, 0.f, // the first vertex of the triangle at (-1, -1)
+        1.f, -1.f, 0.f, // the second vertex of the triangle at (1, -1)
+        0.f, 1.f, 0.f // the third vertex of the triangle at (0, 1)
+    };
+    unsigned int VBO;
+    glGenBuffers(1, &VBO); // create the space for the vertices we want to upload to the GPU
+    glBindBuffer(GL_ARRAY_BUFFER, VBO); // bind the VBO and tell OpenGL that it is a buffer for an array
+    glBufferData(GL_ARRAY_BUFFER, 2 * 3 * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0); // same as layout(location = i), where i is 0 in our case
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+    while(!glfwWindowShouldClose(window))
+    {
+        glClear(GL_COLOR_BUFFER_BIT); // clear the internal buffers that are used by OpenGL
+
+        //render here
+        glDrawArrays(GL_TRIANGLES, 0, 1);
+        //end of render
+
+        glfwSwapBuffers(window); // swap the front and the back buffers
+        glfwPollEvents(); // poll events, such as a window movement or a window close.
+    }
+    glfwTerminate(); // kill all windows and terminate
+    return 0;
+}
+                    </code>
+                </pre>
+            </div>
+        </p>
+        <p>
+            Running the code should give you a window that looks like this:
+            <img src = "assets/hello_world_triangle.png">
         </p>
         <hr>
         <footer>
